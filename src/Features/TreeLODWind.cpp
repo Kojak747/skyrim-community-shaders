@@ -2,10 +2,14 @@
 
 #include <imgui.h>
 
+#include "../I18n/I18n.h"
+
+#define I18N_KEY_PREFIX "feature.tree_lod_wind."
+
 void TreeLODWind::DrawSettings()
 {
-	ImGui::TextWrapped(
-		"This feature provides compatibility with the Windswept Tree LOD SKSE plugin, which makes the distant DynDOLOD billboard trees sway in the wind. The plugin's own settings control the sway. This feature is only active when the Windswept Tree LOD plugin is installed.");
+	ImGui::TextWrapped("%s", T(TKEY("settings_info"),
+		"This feature provides compatibility with the Windswept Tree LOD SKSE plugin, which makes the distant DynDOLOD billboard trees sway in the wind. The plugin's own settings control the sway. This feature is only active when the Windswept Tree LOD plugin is installed."));
 }
 
 void TreeLODWind::PostPostLoad()
@@ -31,10 +35,15 @@ void TreeLODWind::PostPostLoad()
 	const std::uint32_t pluginVersion = interfaceVersionFn ? interfaceVersionFn() : 0;
 	if (pluginVersion != kInterfaceVersion) {
 		loaded = false;
-		failedLoadedMessage = std::format("This Windswept Tree LOD version is not compatible (interface {}, required {}), compatibility is disabled. Update Windswept Tree LOD.", pluginVersion, kInterfaceVersion);
+		const auto requiredVersion = kInterfaceVersion;
+		failedLoadedMessage = std::vformat(
+			T(TKEY("incompatible_plugin"), "This Windswept Tree LOD version is not compatible (interface {}, required {}), compatibility is disabled. Update Windswept Tree LOD."),
+			std::make_format_args(pluginVersion, requiredVersion));
 		logger::warn("[Tree LOD Wind] {}", failedLoadedMessage);
 		return;
 	}
 
 	logger::info("[Tree LOD Wind] Windswept Tree LOD plugin detected (interface {}), compatibility enabled", pluginVersion);
 }
+
+#undef I18N_KEY_PREFIX

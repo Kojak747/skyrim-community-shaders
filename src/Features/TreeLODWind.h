@@ -21,6 +21,7 @@ struct TreeLODWind : Feature
 	static constexpr std::string_view MOD_ID = "195280";
 
 	virtual inline std::string GetName() override { return "Tree LOD Wind"; }
+	virtual inline std::string GetDisplayName() override { return T("feature.tree_lod_wind.name", "Tree LOD Wind"); }
 	virtual inline std::string GetShortName() override { return "TreeLODWind"; }
 	virtual inline std::string_view GetShaderDefineName() override { return "TREE_LOD_WIND"; }
 	virtual inline bool HasShaderDefine(RE::BSShader::Type t) override
@@ -33,9 +34,9 @@ struct TreeLODWind : Feature
 	/** @brief Returns a summary description for the UI. */
 	virtual std::pair<std::string, std::vector<std::string>> GetFeatureSummary() override
 	{
-		return { "Lets the distant DynDOLOD billboard trees sway in the wind, in support of the Windswept Tree LOD plugin.",
-			{ "Active only while the Windswept Tree LOD SKSE plugin is installed.",
-				"Without the plugin, tree LOD is drawn exactly as before." } };
+		return { T("feature.tree_lod_wind.description", "Lets the distant DynDOLOD billboard trees sway in the wind, in support of the Windswept Tree LOD plugin."),
+			{ T("feature.tree_lod_wind.key_feature_1", "Active only while the Windswept Tree LOD SKSE plugin is installed."),
+				T("feature.tree_lod_wind.key_feature_2", "Without the plugin, tree LOD is drawn exactly as before.") } };
 	}
 
 	virtual void DrawSettings() override;
