@@ -99,7 +99,7 @@ float2 SmoothSaturate(float2 value)
 	return value * value * (3 - 2 * value);
 }
 
-#	if defined(TREE_LOD_WIND) && !defined(TREE_ANIM) && !defined(LOD_LANDSCAPE) && !defined(SKINNED)
+#	if defined(TREE_LOD_WIND) && defined(VC) && !defined(TREE_ANIM) && !defined(LOD_LANDSCAPE) && !defined(SKINNED)
 #		define TREE_LOD_WIND_VS
 #		include "TreeLODWind/TreeLODWind.hlsli"
 #	endif

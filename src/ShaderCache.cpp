@@ -734,7 +734,7 @@ namespace SIE
 
 			// Utility does not take the general feature defines (features that define for every shader type would
 			// change Utility permutations); Tree LOD Wind needs its define here so depth and shadows sway with Lighting.
-			if (globals::features::treeLODWind.loaded) {
+			if (globals::features::treeLODWind.loaded && globals::features::treeLODWind.HasShaderDefine(RE::BSShader::Type::Utility)) {
 				defines[lastIndex++] = { globals::features::treeLODWind.GetShaderDefineName().data(), nullptr };
 			}
 
