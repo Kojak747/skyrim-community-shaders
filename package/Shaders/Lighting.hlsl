@@ -195,7 +195,11 @@ VS_OUTPUT main(VS_INPUT input)
 
 	float4 viewPos = mul(ViewProj, worldPosition);
 #	else   // !SKINNED
+#		if defined(TREE_LOD_WIND_VS)
+	precise float4 previousWorldPosition = float4(mul(PreviousWorld, previousInputPosition), 1);
+#		else
 	precise float4 previousWorldPosition = float4(mul(PreviousWorld, inputPosition), 1);
+#		endif
 	precise float4 worldPosition = float4(mul(World, inputPosition), 1);
 	precise float4x4 world4x4 = float4x4(World[0], World[1], World[2], float4(0, 0, 0, 1));
 	precise float4x4 modelView = mul(ViewProj, world4x4);
