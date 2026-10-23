@@ -46,8 +46,5 @@ struct TreeLODWind : Feature
 	virtual bool IsCore() const override { return true; }
 
 	/** @brief Listed in the menu only when the plugin is installed. */
-	virtual bool IsInMenu() const override { return pluginFound; }
-
-private:
-	bool pluginFound = false;
+	virtual bool IsInMenu() const override { return GetModuleHandleW(L"K747_LodWind.dll") != nullptr; }
 };

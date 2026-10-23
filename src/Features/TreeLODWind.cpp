@@ -14,11 +14,10 @@ void TreeLODWind::PostPostLoad()
 	// been validated yet, so installing or removing the plugin invalidates the cache through
 	// regular feature validation.
 	const auto companionModule = GetModuleHandleW(L"K747_LodWind.dll");
-	pluginFound = companionModule != nullptr;
 	if (!loaded)
 		return;
 
-	if (!pluginFound) {
+	if (companionModule == nullptr) {
 		// Most users never install the plugin, so it is disabled without a failure message and kept out of the menu.
 		loaded = false;
 		logger::info("[Tree LOD Wind] Windswept Tree LOD plugin not detected, compatibility disabled");
