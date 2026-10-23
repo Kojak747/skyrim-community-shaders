@@ -10,11 +10,16 @@
  * vertex shader for those draws only. The TREE_LOD_WIND define adds the matching vertex offset to
  * Lighting.hlsl and Utility.hlsl, so the colour, depth and shadow passes all move together.
  *
- * It self-disables in PostPostLoad when the plugin is absent, so the define is off and the shaders
- * are unchanged without it; regular feature validation recompiles them when the plugin is added or removed.
+ * It self-disables in PostPostLoad when the plugin is absent or reports a different interface version, so
+ * the define is off and the shaders are unchanged without it; regular feature validation recompiles them
+ * when the plugin is added or removed.
  */
 struct TreeLODWind : Feature
 {
+	/** @brief b13 cbuffer layout and t120 buffer version the shaders expect; the plugin must report the same. */
+	static constexpr std::uint32_t kInterfaceVersion = 1;
+	static constexpr std::string_view MOD_ID = "195280";
+
 	virtual inline std::string GetName() override { return "Tree LOD Wind"; }
 	virtual inline std::string GetShortName() override { return "TreeLODWind"; }
 	virtual inline std::string_view GetShaderDefineName() override { return "TREE_LOD_WIND"; }
@@ -23,6 +28,7 @@ struct TreeLODWind : Feature
 		return t == RE::BSShader::Type::Lighting || t == RE::BSShader::Type::Utility;
 	}
 	virtual std::string_view GetCategory() const override { return FeatureCategories::kLandscapeAndTextures; }
+	virtual inline std::string GetFeatureModLink() override { return MakeNexusModURL(MOD_ID); }
 
 	/** @brief Returns a summary description for the UI. */
 	virtual std::pair<std::string, std::vector<std::string>> GetFeatureSummary() override
@@ -38,4 +44,10 @@ struct TreeLODWind : Feature
 	virtual void PostPostLoad() override;
 
 	virtual bool IsCore() const override { return true; }
+
+	/** @brief Listed in the menu only when the plugin is installed. */
+	virtual bool IsInMenu() const override { return pluginFound; }
+
+private:
+	bool pluginFound = false;
 };

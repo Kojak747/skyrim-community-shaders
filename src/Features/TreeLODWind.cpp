@@ -13,11 +13,29 @@ void TreeLODWind::PostPostLoad()
 	// Checked here because every SKSE plugin has loaded by now and the shader disk cache has not
 	// been validated yet, so installing or removing the plugin invalidates the cache through
 	// regular feature validation.
-	if (loaded && GetModuleHandleW(L"K747_LodWind.dll") == nullptr) {
+	const auto companionModule = GetModuleHandleW(L"K747_LodWind.dll");
+	pluginFound = companionModule != nullptr;
+	if (!loaded)
+		return;
+
+	if (!pluginFound) {
+		// Most users never install the plugin, so it is disabled without a failure message and kept out of the menu.
 		loaded = false;
-		failedLoadedMessage = "Windswept Tree LOD is not installed, compatibility is disabled.";
 		logger::info("[Tree LOD Wind] Windswept Tree LOD plugin not detected, compatibility disabled");
-	} else if (loaded) {
-		logger::info("[Tree LOD Wind] Windswept Tree LOD plugin detected, compatibility enabled");
+		return;
 	}
+
+	// The b13 cbuffer layout and the t120 buffer are a contract with the plugin, so only a build that reports
+	// this interface version enables the shader changes.
+	using InterfaceVersionFn = std::uint32_t (*)();
+	const auto interfaceVersionFn = reinterpret_cast<InterfaceVersionFn>(GetProcAddress(companionModule, "WindsweptTreeLOD_GetInterfaceVersion"));
+	const std::uint32_t pluginVersion = interfaceVersionFn ? interfaceVersionFn() : 0;
+	if (pluginVersion != kInterfaceVersion) {
+		loaded = false;
+		failedLoadedMessage = std::format("This Windswept Tree LOD version is not compatible (interface {}, required {}), compatibility is disabled. Update Windswept Tree LOD.", pluginVersion, kInterfaceVersion);
+		logger::warn("[Tree LOD Wind] {}", failedLoadedMessage);
+		return;
+	}
+
+	logger::info("[Tree LOD Wind] Windswept Tree LOD plugin detected (interface {}), compatibility enabled", pluginVersion);
 }

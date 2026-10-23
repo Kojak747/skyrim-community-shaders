@@ -2,13 +2,16 @@
 #define __TREE_LOD_WIND_HLSLI__
 
 // Wind sway for DynDOLOD billboard tree LOD. The Windswept Tree LOD plugin binds both resources,
-// and sets Params.z only while it draws a tree LOD shape; every other draw reads zero and is untouched.
+// and sets Params.z only while it draws a tree LOD shape. Params.w carries the plugin's tag, so a draw
+// with nothing or another feature's buffer at b13 (GrassOptimizations binds one) is untouched.
 namespace TreeLODWind
 {
+	static const uint kBindingTag = 0x574E4454u;  // must match the plugin
+
 	cbuffer TreeLODWindCB : register(b13)
 	{
 		float4 Wind;    // phase, previous phase, wind speed 0-1, wind angle (radians)
-		float4 Params;  // amplitude, near distance, enabled, unused
+		float4 Params;  // amplitude, near distance, enabled, binding tag
 		float4 Shape;   // bend exponent, use bend weights, flutter strength, per-tree phase spread
 		float4 Detail;  // flutter share, flutter speed, near scale, near ramp end
 		float4 Gusts;   // gust strength, gust rarity, unused, unused
@@ -19,7 +22,7 @@ namespace TreeLODWind
 
 	bool IsEnabled()
 	{
-		return Params.z > 0.5;
+		return Params.z > 0.5 && asuint(Params.w) == kBindingTag;
 	}
 
 	float2 Sway(float3 positionMS, float phase)
